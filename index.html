@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메모리얼모음</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
+
+        * {
+            font-family: "Black Han Sans", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .mytitle {}
+
+        .mybtn {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        .main {
+            background-image: url('https://upload3.inven.co.kr/upload/2021/12/28/bbs/i13954857913.png?MW=800');
+            background-position: center;
+            background-size: cover;
+            color: white;
+        }
+
+        body {
+            background-color: black;
+        }
+
+        .mycards {
+            width: 1200px;
+            margin: 20px auto 0 auto;
+        }
+
+        .mypostingbox {
+            width: 500px;
+            margin: 20px auto 0px auto;
+            border: 1px solid white;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px;
+            border-radius: 5px;
+
+        }
+
+        .form-floating>input {
+            background-color: transparent;
+            color: white;
+        }
+
+        .form-floating>label {
+            color: white;
+        }
+
+        .input-group>label {
+            background-color: transparent;
+            color: white;
+        }
+
+        .input-group>select {
+            background-color: transparent;
+            color: white;
+        }
+
+        .mypostingbox>button {
+            width: 100%;
+        }
+    </style>
+    <script type="module">
+        // Firebase SDK 라이브러리 가져오기
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeTHGGPg9Tf4M3v10Qz683PQKKbn8Q4nk",
+            authDomain: "sparta-prc.firebaseapp.com",
+            projectId: "sparta-prc",
+            storageBucket: "sparta-prc.appspot.com",
+            messagingSenderId: "306754808823",
+            appId: "1:306754808823:web:c3967462fef17c82a45cf2",
+            measurementId: "G-D9F4QR5PK0"
+        };
+
+
+        // Firebase 인스턴스 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+
+
+        function hey() {
+            $('#title').text('용사아리스');
+        };
+
+        let url = "";
+        fetch(url).then(res => res.json()).then(data => {
+            let temp = data['temp'];
+            if (temp<20) {
+                $('msg').text('덥다');
+            }
+            else {
+                $('msg').text('춥다');
+            }
+        })
+
+        $("#postingbtn").click(async function () {
+
+            let image = $('#image').val();
+            let title = $('#title').val();
+            let star = $('#star').val();
+            let comment = $('#comment').val();
+
+            let doc = {
+                'image': image,
+                'title': title,
+                'star': star,
+                'comment': comment
+            };
+            await addDoc(collection(db, "movies"), doc);
+            alert('저장 완료');
+            window.location.reload();
+        })
+        $("#savebtn").click(async function () {
+            $('#postingbox').toggle();
+
+        })
+
+        let docs = await getDocs(collection(db, "movies"));
+        docs.forEach((doc) => {
+            let row = doc.data();
+
+            let image = row['#image'];
+            let title = row['#title'];
+            let star = row['#star'];
+            let comment = row['#comment'];
+
+            let temp_html = `
+            <div class="col">
+                <div class="card h-100">
+                    <img src="${image}"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">${title}</h5>
+                        <p class="card-text">${star}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-body-secondary">${comment}</small>
+                    </div>
+                </div>
+            </div>`;
+            $('#card').append(temp_html);
+        });
+    </script>
+</head>
+
+<body>
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+                        <use xlink:href="#bootstrap"></use>
+                    </svg>
+                </a>
+
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="#" class="nav-link px-2 text-danger">아리스메모리얼</a></li>
+                    <li><a href="#" class="nav-link px-2 text-white">홈</a></li>
+                    <li><a href="#" class="nav-link px-2 text-white">시청하기</a></li>
+                    <li><a href="#" class="nav-link px-2 text-white">보관함</a></li>
+                    <li><a href="#" class="nav-link px-2 text-white">고객센터</a></li>
+                </ul>
+
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..."
+                        aria-label="Search">
+                </form>
+
+                <div class="text-end">
+                    <button type="button" class="btn btn-outline-light me-2">로그인</button>
+                    <button type="button" class="btn btn-danger">회원가입</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="main">
+        <div class="mytitle">
+            <div class="container-fluid py-5">
+                <h1 id="title" class="display-5 fw-bold">아리스</h1>
+                <p class="col-md-8 fs-4">아리스의 귀여운 순간들을 모두 확인하세요!</p>
+                <button id="savebtn" type="button" class="btn btn-outline-light">메모리얼 저장하기</button>
+                <button type="button" class="btn btn-outline-light">상세정보</button>
+            </div>
+        </div>
+    </div>
+    <div class="mypostingbox">
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="image" placeholder="메모리얼 원본주소">
+            <label for="floatingInput">메모리얼 원본주소</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="title" placeholder="메모리얼 제목">
+            <label for="floatingInput">메모리얼 제목</label>
+        </div>
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01">별점</label>
+            <select class="form-select" id="star">
+                <option selected>별점선택.</option>
+                <option value="1">⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="5">⭐⭐⭐⭐⭐</option>
+            </select>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="comment" placeholder="추천 이유">
+            <label for="floatingInput">추천 이유</label>
+        </div>
+        <button id="postingbtn" type="button" class="btn btn-danger">기록하기</button>
+    </div>
+    <div class="mycards">
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://i1.koreamobilegame.com/files/6528a0d8eadfc4fe1496a6c72f564e7d.jpg"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">제목</h5>
+                        <p class="card-text">⭐⭐⭐⭐⭐</p>
+                        <p class="card-text">내용</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://i1.koreamobilegame.com/files/6528a0d8eadfc4fe1496a6c72f564e7d.jpg"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">제목</h5>
+                        <p class="card-text">⭐⭐⭐⭐⭐</p>
+                        <p class="card-text">내용</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://i1.koreamobilegame.com/files/6528a0d8eadfc4fe1496a6c72f564e7d.jpg"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">제목</h5>
+                        <p class="card-text">⭐⭐⭐⭐⭐</p>
+                        <p class="card-text">내용</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://i1.koreamobilegame.com/files/6528a0d8eadfc4fe1496a6c72f564e7d.jpg"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">제목</h5>
+                        <p class="card-text">⭐⭐⭐⭐⭐</p>
+                        <p class="card-text">내용</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
